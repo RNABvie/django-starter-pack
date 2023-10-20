@@ -2,7 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('api/worker/', views.WorkerListCreate.as_view()),
-    # path('api/worker/', views.workers),
-    path('api/worker/<str:pk>', views.workers_pk),
+    # path('worker/', views.WorkerListCreate.as_view()),
+    # # path('worker/', views.workers),
+    # path('worker/<str:pk>', views.workers_pk),
+
+    path('news/', views.news),
+    # path("weather/", views.weather),
 ]

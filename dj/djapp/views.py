@@ -1,15 +1,33 @@
 from django.shortcuts import render
 
 from rest_framework import filters
-
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
-
 from djapp import models, serializers
-
 from rest_framework import generics
+
+#######################
+from django.http import HttpRequest, JsonResponse
+import requests
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (HTML, like Gecko) '
+                  'Chrome/102.0.0.0 Safari/537.36'
+}
+# @api_view(http_method_names=['GET'])
+def news(request: HttpRequest):
+    data1 = requests.get("https://fakenews.squirro.com/news/sport", headers=headers).json()
+    _news = data1["news"]
+    data2 = []
+    for new in _news:
+        data2.append({"id": new["id"], "title": new["headline"]})
+    return JsonResponse(data={"news": data2}, safe=True)
+    # return Response(data=data2, status=status.HTTP_200_OK)
+
+
+
 
 
 class WorkerListCreate(generics.ListCreateAPIView):
