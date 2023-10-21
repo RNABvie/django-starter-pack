@@ -7,5 +7,5 @@ urlpatterns = [
     # path('worker/<str:pk>', views.workers_pk),
 
     path('news/', views.news),
-    # path("weather/", views.weather),
+    path("weather/", views.weather),
 ]
