@@ -32,10 +32,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    'channels',
     'rest_framework',
     'django_filters',
     'corsheaders',
     'drf_yasg',
+    'grappelli',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -80,7 +83,7 @@ ROOT_URLCONF = 'dj.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,7 +96,15 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'dj.wsgi.application'
+ASGI_APPLICATION = 'dj.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 
 # Database
@@ -141,8 +152,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
+STATIC_DIR = Path(BASE_DIR / 'static')
+STATIC_ROOT = Path(BASE_DIR / 'static')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

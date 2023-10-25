@@ -20,7 +20,9 @@ from django.urls import path, include
 
 
 urlpatterns = [
+    path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
     path('', include('djapp.urls')),
+
     # path('api-auth/', include('rest_framework.urls')),
 ]

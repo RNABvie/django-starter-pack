@@ -1,3 +1,5 @@
+import re
+
 import django.contrib.auth.models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -12,17 +14,58 @@ from django.dispatch import receiver
 def validate_check(text):
     if text != text.capitalize():
         raise ValidationError(
-            _("%(text)s is not Capitalized"),
+            _("%(text)s is not properly Capitalized"),
             params={"text": text},
         )
+def validate_symbols(text):
+    valid_txt = re.match(r"[A-Za-z]", text)
 
-# Create your models here.
+    if valid_txt is None:
+        raise ValidationError(
+            f"{text} contains prohibited symbols(use 'A-z')"
+        )
+
+def validate_numeric(str):
+    try:
+        int(str)
+    except Exception:
+        raise ValidationError(
+            _("%(str)s contains symbols"),
+            params={"str": str},
+        )
+
+
+####################################################
+
+class Room(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __str__(self):
+        return f"<Room({self.id}) name: {self.slug}>"
+
+
+class Message(models.Model):
+    room = models.ForeignKey(Room, related_name="messages", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="messages", on_delete=models.CASCADE)
+    content = models.TextField()
+    date_added = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-date_added',)
+
+####################################################
+
+
 class Worker(models.Model):
     """Таблица с полями и их настройками в базе данных"""
 
-    iin = models.CharField(verbose_name="ИИН", unique=True, max_length=13)
-    first_name = models.CharField(verbose_name="Имя", max_length=200, validators=[validate_check])
-    last_name = models.CharField(verbose_name="Фамилия", max_length=200, validators=[validate_check])
+    iin = models.CharField(verbose_name="ИИН", unique=True, max_length=13, validators=[validate_numeric])
+    first_name = models.CharField(verbose_name="Имя", max_length=200, validators=[validate_check, validate_symbols])
+    last_name = models.CharField(verbose_name="Фамилия", max_length=200, validators=[validate_check, validate_symbols])
 
     class Meta:
         app_label = "djapp"
@@ -63,7 +106,7 @@ class News(models.Model):
         verbose_name_plural = "Новости"
 
     def __str__(self):
-        return f"<News {self.title} {self.description[:10]}>"
+        return f"<News {self.title} {self.description[:10]}..>"
 
 
 

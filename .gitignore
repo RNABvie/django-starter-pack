@@ -7,3 +7,6 @@
 env/
 venv/
 .idea/
+
+/justpython.py
+/backup_views.py

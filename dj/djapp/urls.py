@@ -3,7 +3,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from . import views
+from . import views, views_aws
 
 
 schema_view = get_schema_view(
@@ -23,6 +23,10 @@ schema_view = get_schema_view(
 
 # add router
 
+websocket_urlpatterns = [
+    path('ws/<slug:room_name>/', views_aws.ChatConsumer.as_asgi()),
+]
+
 urlpatterns = [
     path("api/swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("api/redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
@@ -35,4 +39,9 @@ urlpatterns = [
 
     path('api/news/', views.news, name='news'),
     path("api/weather/", views.weather),
+
+    ####################
+    path('data/', views.data, name="data"),
+    path('', views.rooms, name="rooms"),
+    path('<slug:slug>/', views.room, name="room"),
 ]

@@ -57,6 +57,27 @@ def weather(request: Request):
 
 #####################################################################
 
+def data(request):
+    return JsonResponse(data={"data": "Python is awesome!"}, safe=False)
+
+
+def rooms(request):
+    return render(request, "home.html", context={"rooms": models.Room.objects.all()})
+
+
+@login_required
+def room(request, slug):
+    room_obj = models.Room.objects.get(slug=slug)
+    messages = models.Message.objects.filter(room=room_obj)[:10][::-1] #задать функцию подгрузки по 100 сообщений как в соц сетях
+    return render(
+        request,
+        "room.html",
+        context={"room": room_obj, "messages": messages}
+    )
+
+
+#####################################################################
+
 
 response_schema_dict = {
     "201": openapi.Response(
@@ -144,6 +165,7 @@ def workers_pk(request: Request, pk: str) -> Response:
 
 
 )
+@login_required
 @api_view(http_method_names=["GET"])
 def workers(request: Request) -> Response:
     '''my comments.....{"iin": "xxxxxxxxxxxxx", "first_name": "Abc", "last_name": "Abc"}'''
@@ -196,8 +218,8 @@ def worker_c(request: Request) -> Response:
     if request.method == "POST":
         new_worker = models.Worker.objects.create(
             iin=str(request.data['iin']),  # unsafe - хочу ловить Exception если этого параметра нет,
-            first_name=request.data['first_name'].lower().capitalize(),
-            last_name=request.data['last_name'].lower().capitalize(),
+            first_name=request.data['first_name'].capitalize(),
+            last_name=request.data['last_name'].capitalize(),
 
             # first_name=str(request.data.get("firstName", "")).strip(),  # safe
             # last_name=str(request.data.get("lastName", "")).strip(),  # safe
